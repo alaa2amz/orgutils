@@ -34,12 +34,18 @@ if [ "$prefix" != "" ];then
 	mkdir $dirname/$prefix
 	dirname="$dirname/$prefix"
 fi
-echo "mv $f --to-- $dirname/$ii ??"
+echo -e "$counter / $# mv $f
+--to--
+\x1b[31m$dirname/$ii\x1b[m ??"
 read ok
 case $ok in
 	[yY]*)
 		mv -iv "$f" "$dirname/$ii" 2>&1|tee -a "$0"-log.txt; date >> "$0"-log.txt ;echo '-----' >>"$0"-log.txt
+		;;	
+	#e*) 
+
 esac
 
 kill $pid
+counter=$(($counter+1))
 done
