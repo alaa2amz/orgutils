@@ -1,4 +1,5 @@
-
+d='\x2d'
+us='\x5f'
 while getopts e:v:p: opt;do
 	case $opt in
 		e)
@@ -26,7 +27,7 @@ for f in "$@";do
 $viewer "$f" 2>/dev/null&
 pid=$!
 $editor $draft
-ii=$(cat $draft|tr '\n' '.' |sed 's/[^[:alnum:]_.]/-/g'|sed 's/-*\.-*/./g'|sed -E 's/^[\.-]|[\.-]$//g'|tr '[:upper:]' '[:lower:]'|tr -s '.-')
+ii=$(cat $draft|tr '\n' '.' |sed 's/[^[:alnum:].,]/_/g'|sed 's/_*\._*/./g'|sed -E 's/^[\._]|[\._]$//g'|tr '[:upper:]' '[:lower:]'|tr -s '._')
 dirname=$(dirname "$f")
 
 if [ "$prefix" != "" ];then
