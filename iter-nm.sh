@@ -1,0 +1,44 @@
+
+while getopts e:v:p: opt;do
+	case $opt in
+		e)
+		e=$OPTARG
+		;;
+		v)
+		v=$OPTARG
+		;;
+		p)
+		p=$OPTARG
+		;;
+	esac
+done
+shift `expr $OPTIND - 1`
+
+prefix=${p:-""}
+viewer=${v:-xdg-open}
+editor=${e:-vi}
+draft=$(tempfile)
+logfile=$(tempfile)
+
+killall  $viewer
+for f in "$@";do
+	printf "\n%s" "$(basename "$f")" > $draft
+$viewer "$f" 2>/dev/null&
+pid=$!
+$editor $draft
+ii=$(cat $draft|tr '\n' '.' |sed 's/[^[:alnum:]_.]/-/g'|sed 's/-*\.-*/./g'|sed -E 's/^[\.-]|[\.-]$//g'|tr '[:upper:]' '[:lower:]'|tr -s '.-')
+dirname=$(dirname "$f")
+
+if [ "$prefix" != "" ];then
+	mkdir $dirname/$prefix
+	dirname="$dirname/$prefix"
+fi
+echo "mv $f --to-- $dirname/$ii ??"
+read ok
+case $ok in
+	[yY]*)
+		mv -iv "$f" "$dirname/$ii" 2>&1|tee -a "$0"-log.txt; date >> "$0"-log.txt ;echo '-----' >>"$0"-log.txt
+esac
+
+kill $pid
+done
